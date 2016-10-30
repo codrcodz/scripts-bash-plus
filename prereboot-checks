@@ -1,0 +1,99 @@
+#!/bin/bash
+br='\n----------\n'; printf "\n====================\nPre-reboot Checks\n====================\n";
+
+printf "${br}File System Check (fsck) Counts:${br}\n";
+for 
+  partition in $(mount | awk '{print $1}' | grep '/dev/');
+do 
+  printf "$partition:\n $(tune2fs -l $partition | egrep -i "mount count")\n\n";
+done;
+
+printf "${br}Cluster Configuration:${br}";
+if 
+  [ -z "$(cat /etc/cluster/cluster.conf 2>/dev/null)" ];
+then 
+  printf "\nClustering Not Configured\n\n"; 
+else 
+  printf "\nCluster Config:\n$(cat /etc/cluster/cluster.conf 2>/dev/null)\n\n"; 
+  printf "Cluster Daemons Running (if any):\n";
+  netstat -plnt | egrep -i "(ricci|luci|modclusterd|rgman|cman|clvm)";
+  printf "\n";
+fi;
+
+printf "${br}NFS Exports:${br}";
+if 
+   [ -z "$(cat /etc/exports)" ];
+then 
+  printf "\nNo NFS Exports Configured\n\n";
+else 
+  printf "\n$(cat /etc/exports)\n\n";
+fi;
+
+printf "${br}NFS Mounts:${br}";
+if 
+  [ -z "$(cat /etc/fstab | grep ':' | egrep -v "^#")" ];
+then 
+  printf "\nNo NFS Mounts Configured\n\n";
+else
+  printf "\n$(cat /etc/fstab | grep ':')\n\n";
+fi;
+
+printf "${br}Running Services Not Chkconfiged On (if any):${br}\n";
+for 
+  i in $(chkconfig --list | grep 3:off | awk '{print $1}'); 
+do 
+  service $i status 2>&1 |
+  egrep -i '(running$|running\.\.\.)' |
+  egrep -i -v 'not running' |
+  while 
+    read status;
+  do 
+    printf "$i:\n$status\n\n";
+  done; 
+done; 
+
+printf "\n";
+printf "${br}MySQL Status Checks:${br}";
+printf "\n$(service mysqld status 2>&1)\n\n";
+for
+  i in {Master,Slave};
+do 
+  if 
+    [[ -n $(echo "show $i status" | mysql 2>&1 | grep "ERROR") ]];
+  then
+    printf "MySQL Login Error\n";
+  elif 
+    [[ -z $(echo "show $i status" | mysql 2>&1 | grep -v "ERROR") ]];
+    then 
+      printf "\n$i Status:\nNot configured as MySQL replication $i\n";
+    else
+       printf "\n$i Status:\n$(echo "show $i status\G" | mysql  2>&1 )\n";
+    fi;
+done;
+
+printf "\n";
+printf "${br}httpd Status Checks:${br}\n$(service httpd status)\n\n$(httpd -t 2>&1)\n";
+printf "\n";
+printf "${br}Site Statuses:${br}";
+if 
+  [ -z $(httpd -S 2>&1 | grep "namevhost" | awk '{print $4}' | head -n1) ];
+then
+  printf "\nNo vhosts appear to be configured;\nbelow is raw output of the VirtualHost configuration check:\n\n$(httpd -S 2>&1 | egrep -v "^Syntax OK")\n\n";
+else 
+  printf "\n";
+  for 
+    site in $(httpd -S 2>&1 | grep "namevhost" | awk '{print $4}' | sort | uniq);
+  do 
+    printf "\nSite: $site\n";
+    if 
+      [ -z "$(curl -IL $site 2>/dev/null)" ];
+    then
+      printf "Site Down\n--\n";
+    else
+      printf "$(curl -I $site 2>/dev/null)\n";
+    fi;
+  done | 
+  egrep -A1 "^Site:";
+fi;
+
+printf "\n"
