@@ -1,4 +1,12 @@
 #!/bin/bash
+# I will add more comments to this script later.
+# In a nutshell, this script was originally just a huuuge one-liner that I used to run pre/post reboot checks.
+# It prints out diagnostic information about mounts, NFS, mysql clustering, httpd, etc.
+# If the server has unique settings or a unique environment, this can help you readily identify that before a reboot.
+# It helps you find "gotchas" like services that are currently running, but aren't chkconfiged on.
+# Most importantly, it gives you a good snapshot of what the server looks like before and after a reboot.
+# If something goes haywire after the server comes back up, you can use the output of this script to see what changed.
+
 br='\n----------\n'; printf "\n====================\nPre-reboot Checks\n====================\n";
 
 printf "${br}File System Check (fsck) Counts:${br}\n";
