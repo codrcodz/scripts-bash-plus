@@ -12,7 +12,7 @@
 ## The final output is formatted into columns of 10-min increments and total "hits" for each 10-min period throughout the day. ##
 #
 ### Usage ###
-## curl -s this.script's-raw.github-url [server/httpd/log/directory] | bash ##
+## bash $(curl -s https://raw.githubusercontent.com/codrcodz/scripts-bash-plus/master/httpd_log_parse-10min) [/your/httpd/log/directory] ##
 #
 _logdir=$1;
 _date=$(date +%d/%b/%Y);
