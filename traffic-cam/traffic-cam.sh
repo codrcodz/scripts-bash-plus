@@ -1,1 +1,31 @@
-
+#!/bin/bash
+#
+### Title ###
+## Traffic Cam (A httpd log parser) ##
+#
+### Description ###
+## This shell script will parse all the logs within a certain log directory. ##
+## You can invoke it with an argument or without; if invoked without, it looks for logs in /var/log/httpd by default. ##
+## It will first find any access logs that appear to be current (not archived) within the log directory. ##
+## Next, it will search those log files for all of today's date and time strings in the default httpd format. ##
+## Lastly, it extracts just the time stamp (excluding date) from each line, dropping the last digit. ##
+## The final output is formatted into columns of 10-min increments and total "hits" for each 10-min period throughout the day. ##
+#
+### Usage ###
+## bash $(curl -s https://raw.githubusercontent.com/codrcodz/scripts-bash-plus/master/httpd_log_parse-10min) [/your/httpd/log/directory] ##
+#
+_logdir=$1;
+_date=$(date +%d/%b/%Y);
+for 
+  _log in $(find ${_logdir:/var/log/apache2} -regex ".*access.*log$");
+do 
+  egrep -o "${_date}:[0-2][0-9](:[0-5][0-9]){2} " ${_log};
+done |
+while 
+  read _time;
+do 
+  printf "${_time: -8:4}0\n";
+done |
+sort |
+uniq -c |
+column -c 72;
