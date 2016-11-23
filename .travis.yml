@@ -10,4 +10,4 @@ before_install:
                                         
 script:
 - sudo docker run centos:6 /bin/bash -c \
-  "exec ${TRAVIS_BUILD_DIR}tests/run_tests.sh" 
+  "exec ${TRAVIS_BUILD_DIR}/tests/run_tests.sh" 
