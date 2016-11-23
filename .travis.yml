@@ -6,7 +6,7 @@ services:
 
 before_install:
 - sudo apt-get update
-- chmod +x ./tests/run_test.sh
+- chmod +x ./tests/run_tests.sh
                                         
 script:
 - sudo docker run --rm=true -v ${TRAVIS_BUILD_DIR}:rw centos:6 /bin/bash -c \
