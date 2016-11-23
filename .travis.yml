@@ -9,5 +9,5 @@ before_install:
 - chmod +x ./tests/run_tests.sh
                                         
 script:
-- sudo docker run centos:6 /bin/bash -c \
+- sudo docker run centos6 /bin/bash -c \
   "exec ${TRAVIS_BUILD_DIR}/tests/run_tests.sh" 
