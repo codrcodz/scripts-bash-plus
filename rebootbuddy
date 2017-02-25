@@ -11,8 +11,11 @@
 # Most importantly, it gives you a good snapshot of what the server looks like before and after a reboot.
 # If something goes haywire after the server comes back up, you can use the output of this script to see what changed.
 
+# Output header
+printf "\n====================\nPre-reboot Checks\n====================\n";
+
 # The "br" variable stores a seperator used between each diagnostic section in the script's output.
-br='\n----------\n'; printf "\n====================\nPre-reboot Checks\n====================\n";
+br='\n----------\n'; 
 
 # The File System Check finds all the mounts, and tells you if anything is due for a fsck at next reboot.
 # When a system runs a file system check, it can add several minutes to boot time, which may be unacceptable.
@@ -67,14 +70,14 @@ printf "${br}Running Services Not Chkconfiged On (if any):${br}\n";
 for 
   i in $(chkconfig --list | grep 3:off | awk '{print $1}'); 
 do 
-  service $i status 2>&1 |
-  egrep -i '(running$|running\.\.\.)' |
-  egrep -i -v 'not running' |
-  while 
-    read status;
-  do 
-    printf "$i:\n$status\n\n";
-  done; 
+  service $i status 2>&1 \
+  | egrep -i '(running$|running\.\.\.)' \
+  | egrep -i -v 'not running' \
+  | while 
+      read status;
+    do 
+      printf "$i:\n$status\n\n";
+    done; 
 done; 
 
 # This checks to see if MySQL is running just before/after reboot, and also checks the replication status.
@@ -126,8 +129,8 @@ else
     else
       printf "$(curl -I $site 2>/dev/null)\n";
     fi;
-  done | 
-  egrep -A1 "^Site:";
+  done \
+  | egrep -A1 "^Site:";
 fi;
 
 printf "\n"
