@@ -1,5 +1,9 @@
 #!/bin/bash
 # In a nutshell, this script was originally just a huuuge one-liner that I used to run pre/post reboot checks.
+#
+# Note: This broken out version has not been very well tested, please see gist for one-liner, better-tested version:
+# http://bit.ly/2kAZOGL
+#
 # It prints out diagnostic information about mounts, NFS, mysql clustering, httpd, etc.
 # If the server has unique settings or a unique environment, this can help you readily identify that before a reboot.
 # It helps you find "gotchas" like services that are currently running, but aren't chkconfiged on.
