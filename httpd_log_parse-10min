@@ -13,7 +13,7 @@
 ## The final output is formatted into columns of 10-min increments and total "hits" for each 10-min period throughout the day. ##
 #
 ### Usage ###
-## bash $(curl -s https://raw.githubusercontent.com/codrcodz/scripts-bash-plus/master/httpd_log_parse-10min) [/your/httpd/log/directory] ##
+## bash <(curl -s https://raw.githubusercontent.com/codrcodz/scripts-bash-plus/master/httpd_log_parse-10min) [/your/httpd/log/directory] ##
 #
 
 # Check to see if a log directory was passed to the script before searching for logs.
