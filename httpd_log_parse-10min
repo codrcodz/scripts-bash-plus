@@ -19,7 +19,8 @@
 # Check to see if a log directory was passed to the script before searching for logs.
 # If no arguments were passed, find out what is on port 80, and look in /var/log/[http|apache2].
 if [ -z "${1}" ]; then
-  _http_server=$(while read _port _addr _state _prog_info; do echo "${_prog_info##*\/}"; done <<< "$(netstat -plnt | egrep -o ":80[[:blank:]].*/.*")")
+  _http_server=$(while read _port _addr _state _prog_info; do echo "${_prog_info##*\/}"; done \
+  <<< $(netstat -plnt | egrep -o ":80[[:blank:]].*/.*"))
   _logdir="/var/log/${_http_server}"
 elif [ -d "${1}" ]; then
   _logdir="$1"
